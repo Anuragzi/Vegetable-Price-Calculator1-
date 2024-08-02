@@ -18,7 +18,7 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            width: 350px;
             max-height: 90vh;
             overflow-y: auto;
         }
@@ -35,11 +35,15 @@
             color: #555;
         }
         input[type="number"] {
-            width: 100%;
+            width: calc(50% - 10px);
             padding: 8px;
             margin-bottom: 15px;
             border: 1px solid #ddd;
             border-radius: 4px;
+        }
+        .input-row {
+            display: flex;
+            justify-content: space-between;
         }
         button {
             width: 100%;
@@ -101,44 +105,112 @@
 
             document.getElementById('result').innerText = `The total price for the vegetables is ₹${totalPrice.toFixed(2)}`;
         }
+
+        function calculateWeight(event, vegetable) {
+            const basePrices = {
+                'tomato': 60,
+                'potato1': 35,
+                'potato2': 28,
+                'potato3': 30,
+                'potato4': 25,
+                'ginger': 160,
+                'chilli': 80,
+                'onion': 45,
+                'lemon': 120,
+                'garlic': 270,
+                'coriander': 300
+            };
+
+            const discountPrices = {
+                'tomato': 55,
+                'potato1': 32,
+                'potato2': 26,
+                'potato3': 28,
+                'potato4': 25,
+                'ginger': 160,
+                'chilli': 70,
+                'onion': 40,
+                'lemon': 120,
+                'garlic': 250,
+                'coriander': 300
+            };
+
+            const price = parseFloat(event.target.value) || 0;
+            const pricePerKg = price > (2.499 * discountPrices[vegetable]) ? discountPrices[vegetable] : basePrices[vegetable];
+            const weight = price / pricePerKg;
+            document.getElementById(vegetable).value = weight.toFixed(2);
+        }
     </script>
 </head>
 <body>
     <div class="container">
         <h1>Vegetable Price Calculator</h1>
         
-        <label for="tomato">Tomato (₹60/kg):</label>
-        <input type="number" id="tomato" name="tomato" step="0.01">
+        <div class="input-row">
+            <label for="tomato">Tomato (₹60/kg):</label>
+            <input type="number" id="tomato" name="tomato" step="0.01">
+            <input type="number" placeholder="₹" oninput="calculateWeight(event, 'tomato')">
+        </div>
 
-        <label for="potato1">Potato (₹35/kg):</label>
-        <input type="number" id="potato1" name="potato1" step="0.01">
+        <div class="input-row">
+            <label for="potato1">Potato (₹35/kg):</label>
+            <input type="number" id="potato1" name="potato1" step="0.01">
+            <input type="number" placeholder="₹" oninput="calculateWeight(event, 'potato1')">
+        </div>
 
-        <label for="potato2">Potato (₹28/kg):</label>
-        <input type="number" id="potato2" name="potato2" step="0.01">
+        <div class="input-row">
+            <label for="potato2">Potato (₹28/kg):</label>
+            <input type="number" id="potato2" name="potato2" step="0.01">
+            <input type="number" placeholder="₹" oninput="calculateWeight(event, 'potato2')">
+        </div>
 
-        <label for="potato3">Potato (₹30/kg):</label>
-        <input type="number" id="potato3" name="potato3" step="0.01">
+        <div class="input-row">
+            <label for="potato3">Potato (₹30/kg):</label>
+            <input type="number" id="potato3" name="potato3" step="0.01">
+            <input type="number" placeholder="₹" oninput="calculateWeight(event, 'potato3')">
+        </div>
 
-        <label for="potato4">Potato (₹25/kg):</label>
-        <input type="number" id="potato4" name="potato4" step="0.01">
+        <div class="input-row">
+            <label for="potato4">Potato (₹25/kg):</label>
+            <input type="number" id="potato4" name="potato4" step="0.01">
+            <input type="number" placeholder="₹" oninput="calculateWeight(event, 'potato4')">
+        </div>
 
-        <label for="ginger">Ginger (₹160/kg):</label>
-        <input type="number" id="ginger" name="ginger" step="0.01">
+        <div class="input-row">
+            <label for="ginger">Ginger (₹160/kg):</label>
+            <input type="number" id="ginger" name="ginger" step="0.01">
+            <input type="number" placeholder="₹" oninput="calculateWeight(event, 'ginger')">
+        </div>
 
-        <label for="chilli">Chilli (₹80/kg):</label>
-        <input type="number" id="chilli" name="chilli" step="0.01">
+        <div class="input-row">
+            <label for="chilli">Chilli (₹80/kg):</label>
+            <input type="number" id="chilli" name="chilli" step="0.01">
+            <input type="number" placeholder="₹" oninput="calculateWeight(event, 'chilli')">
+        </div>
 
-        <label for="onion">Onion (₹45/kg):</label>
-        <input type="number" id="onion" name="onion" step="0.01">
+        <div class="input-row">
+            <label for="onion">Onion (₹45/kg):</label>
+            <input type="number" id="onion" name="onion" step="0.01">
+            <input type="number" placeholder="₹" oninput="calculateWeight(event, 'onion')">
+        </div>
 
-        <label for="lemon">Lemon (₹120/kg):</label>
-        <input type="number" id="lemon" name="lemon" step="0.01">
+        <div class="input-row">
+            <label for="lemon">Lemon (₹120/kg):</label>
+            <input type="number" id="lemon" name="lemon" step="0.01">
+            <input type="number" placeholder="₹" oninput="calculateWeight(event, 'lemon')">
+        </div>
 
-        <label for="garlic">Garlic (₹270/kg):</label>
-        <input type="number" id="garlic" name="garlic" step="0.01">
+        <div class="input-row">
+            <label for="garlic">Garlic (₹270/kg):</label>
+            <input type="number" id="garlic" name="garlic" step="0.01">
+            <input type="number" placeholder="₹" oninput="calculateWeight(event, 'garlic')">
+        </div>
 
-        <label for="coriander">Coriander (₹300/kg):</label>
-        <input type="number" id="coriander" name="coriander" step="0.01">
+        <div class="input-row">
+            <label for="coriander">Coriander (₹300/kg):</label>
+            <input type="number" id="coriander" name="coriander" step="0.01">
+            <input type="number" placeholder="₹" oninput="calculateWeight(event, 'coriander')">
+        </div>
 
         <button onclick="calculateTotalPrice()">Calculate Total Price</button>
         <p id="result"></p>
