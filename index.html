@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rife Fresh Vegetable</title>
     <style>
         body {
@@ -12,6 +13,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            position: relative;
         }
         .container {
             background-color: #fff;
@@ -22,12 +24,58 @@
             max-width: 400px;
             max-height: 90vh;
             overflow-y: auto;
+            position: relative;
         }
         h1 {
             font-size: 24px;
-            margin-bottom: 20px;
+            margin: 0;
             color: #333;
             text-align: center;
+            position: relative;
+        }
+        .menu {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            text-align: right;
+            z-index: 1000; /* Ensure it's on top of other elements */
+        }
+        .menu .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: #333;
+            padding: 10px;
+        }
+        .menu .menu-btn:hover {
+            color: #555;
+        }
+        .menu .menu-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        .menu .menu-content button {
+            background-color: #f9f9f9;
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            text-align: left;
+            border: none;
+            cursor: pointer;
+        }
+        .menu .menu-content button:hover {
+            background-color: #ddd;
+        }
+        .menu .show {
+            display: block;
         }
         label {
             font-weight: bold;
@@ -36,7 +84,7 @@
             color: #555;
         }
         input[type="number"] {
-            width: calc(50% - 10px);
+            width: 100%;
             padding: 8px;
             margin-bottom: 15px;
             border: 1px solid #ddd;
@@ -44,7 +92,21 @@
         }
         .input-row {
             display: flex;
-            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .input-row label {
+            flex-basis: 100%;
+            margin-bottom: 5px;
+        }
+        .input-row input[type="number"] {
+            flex: 1;
+            min-width: 48%;
+            margin-right: 4%;
+            margin-bottom: 10px;
+        }
+        .input-row input[type="number"]:nth-child(2n) {
+            margin-right: 0;
         }
         button {
             width: 100%;
@@ -55,6 +117,7 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            margin-bottom: 10px;
         }
         button:hover {
             background-color: #218838;
@@ -65,14 +128,24 @@
             color: #333;
             text-align: center;
         }
+        #admin-form {
+            display: none;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 400px) {
+            .input-row input[type="number"] {
+                flex-basis: 100%;
+                margin-right: 0;
+            }
+        }
     </style>
     <script>
-        const basePrices = {
+        let basePrices = JSON.parse(localStorage.getItem('basePrices')) || {
             'tomato': 50,
             'potato1': 35,
-            'potato2': 28,
-            'potato3': 30,
-            'potato4': 25,
+            'potato2': 30,
+            'potato3': 28,
             'ginger': 160,
             'chilli': 80,
             'onion': 45,
@@ -81,12 +154,11 @@
             'coriander': 300
         };
 
-        const discountPrices = {
+        let discountPrices = JSON.parse(localStorage.getItem('discountPrices')) || {
             'tomato': 55,
             'potato1': 32,
-            'potato2': 26,
-            'potato3': 28,
-            'potato4': 25,
+            'potato2': 28,
+            'potato3': 26,
             'ginger': 160,
             'chilli': 70,
             'onion': 40,
@@ -120,81 +192,198 @@
             const price = weight * pricePerKg;
             document.getElementById(`${vegetable}_price`).value = price.toFixed(2);
         }
+
+        function toggleMenu() {
+            document.getElementById('menu-content').classList.toggle('show');
+        }
+
+        function showAdminForm() {
+            document.getElementById('admin-form').style.display = 'block';
+            document.getElementById('menu-content').classList.remove('show');
+        }
+
+        function closeAdminForm() {
+            document.getElementById('admin-form').style.display = 'none';
+        }
+
+        function updatePrices() {
+            for (const vegetable in basePrices) {
+                const newPrice = parseFloat(document.getElementById(`${vegetable}_base`).value) || basePrices[vegetable];
+                basePrices[vegetable] = newPrice;
+
+                const newDiscountPrice = parseFloat(document.getElementById(`${vegetable}_discount`).value) || discountPrices[vegetable];
+                discountPrices[vegetable] = newDiscountPrice;
+            }
+
+            localStorage.setItem('basePrices', JSON.stringify(basePrices));
+            localStorage.setItem('discountPrices', JSON.stringify(discountPrices));
+
+            alert('Prices updated successfully!');
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.menu-btn')) {
+                const dropdowns = document.getElementsByClassName('menu-content');
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
     </script>
 </head>
 <body>
     <div class="container">
-        <h1>Rife Fresh Vegetable</h1>
-        
+        <h1>Rife Fresh Vegetable
+            <div class="menu">
+                <button class="menu-btn" onclick="toggleMenu()">⋮</button>
+                <div id="menu-content" class="menu-content">
+                    <button onclick="showAdminForm()">Admin Panel</button>
+                </div>
+            </div>
+        </h1>
+
         <div class="input-row">
-            <label for="tomato">टमाटर (₹50/किग्रा):</label>
-            <input type="number" id="tomato_price" placeholder="₹" oninput="calculateWeight(event, 'tomato')">
+            <label for="tomato">टमाटर:</label>
             <input type="number" id="tomato" name="tomato" step="0.01" placeholder="किग्रा" oninput="calculatePrice(event, 'tomato')">
+            <input type="number" id="tomato_price" placeholder="₹" oninput="calculateWeight(event, 'tomato')">
         </div>
 
         <div class="input-row">
             <label for="potato1">आलू (₹35/किग्रा):</label>
-            <input type="number" id="potato1_price" placeholder="₹" oninput="calculateWeight(event, 'potato1')">
             <input type="number" id="potato1" name="potato1" step="0.01" placeholder="किग्रा" oninput="calculatePrice(event, 'potato1')">
+            <input type="number" id="potato1_price" placeholder="₹" oninput="calculateWeight(event, 'potato1')">
         </div>
 
         <div class="input-row">
-            <label for="potato2">आलू (₹28/किग्रा):</label>
-            <input type="number" id="potato2_price" placeholder="₹" oninput="calculateWeight(event, 'potato2')">
+            <label for="potato2">आलू (₹30/किग्रा):</label>
             <input type="number" id="potato2" name="potato2" step="0.01" placeholder="किग्रा" oninput="calculatePrice(event, 'potato2')">
+            <input type="number" id="potato2_price" placeholder="₹" oninput="calculateWeight(event, 'potato2')">
         </div>
 
         <div class="input-row">
-            <label for="potato3">आलू (₹30/किग्रा):</label>
-            <input type="number" id="potato3_price" placeholder="₹" oninput="calculateWeight(event, 'potato3')">
+            <label for="potato3">आलू (₹28/किग्रा):</label>
             <input type="number" id="potato3" name="potato3" step="0.01" placeholder="किग्रा" oninput="calculatePrice(event, 'potato3')">
+            <input type="number" id="potato3_price" placeholder="₹" oninput="calculateWeight(event, 'potato3')">
         </div>
 
         <div class="input-row">
-            <label for="potato4">आलू (₹25/किग्रा):</label>
-            <input type="number" id="potato4_price" placeholder="₹" oninput="calculateWeight(event, 'potato4')">
-            <input type="number" id="potato4" name="potato4" step="0.01" placeholder="किग्रा" oninput="calculatePrice(event, 'potato4')">
-        </div>
-
-        <div class="input-row">
-            <label for="ginger">अदरक (₹160/किग्रा):</label>
-            <input type="number" id="ginger_price" placeholder="₹" oninput="calculateWeight(event, 'ginger')">
+            <label for="ginger">अदरक:</label>
             <input type="number" id="ginger" name="ginger" step="0.01" placeholder="किग्रा" oninput="calculatePrice(event, 'ginger')">
+            <input type="number" id="ginger_price" placeholder="₹" oninput="calculateWeight(event, 'ginger')">
         </div>
 
         <div class="input-row">
-            <label for="chilli">मिर्ची (₹80/किग्रा):</label>
-            <input type="number" id="chilli_price" placeholder="₹" oninput="calculateWeight(event, 'chilli')">
+            <label for="chilli">मिर्ची:</label>
             <input type="number" id="chilli" name="chilli" step="0.01" placeholder="किग्रा" oninput="calculatePrice(event, 'chilli')">
+            <input type="number" id="chilli_price" placeholder="₹" oninput="calculateWeight(event, 'chilli')">
         </div>
 
         <div class="input-row">
-            <label for="onion">प्याज (₹45/किग्रा):</label>
-            <input type="number" id="onion_price" placeholder="₹" oninput="calculateWeight(event, 'onion')">
+            <label for="onion">प्याज:</label>
             <input type="number" id="onion" name="onion" step="0.01" placeholder="किग्रा" oninput="calculatePrice(event, 'onion')">
+            <input type="number" id="onion_price" placeholder="₹" oninput="calculateWeight(event, 'onion')">
         </div>
 
         <div class="input-row">
-            <label for="lemon">नींबू (₹120/किग्रा):</label>
-            <input type="number" id="lemon_price" placeholder="₹" oninput="calculateWeight(event, 'lemon')">
+            <label for="lemon">नींबू:</label>
             <input type="number" id="lemon" name="lemon" step="0.01" placeholder="किग्रा" oninput="calculatePrice(event, 'lemon')">
+            <input type="number" id="lemon_price" placeholder="₹" oninput="calculateWeight(event, 'lemon')">
         </div>
 
         <div class="input-row">
-            <label for="garlic">लहसुन (₹270/किग्रा):</label>
-            <input type="number" id="garlic_price" placeholder="₹" oninput="calculateWeight(event, 'garlic')">
+            <label for="garlic">लहसुन:</label>
             <input type="number" id="garlic" name="garlic" step="0.01" placeholder="किग्रा" oninput="calculatePrice(event, 'garlic')">
+            <input type="number" id="garlic_price" placeholder="₹" oninput="calculateWeight(event, 'garlic')">
         </div>
 
         <div class="input-row">
-            <label for="coriander">धनिया (₹300/किग्रा):</label>
-            <input type="number" id="coriander_price" placeholder="₹" oninput="calculateWeight(event, 'coriander')">
+            <label for="coriander">धनिया:</label>
             <input type="number" id="coriander" name="coriander" step="0.01" placeholder="किग्रा" oninput="calculatePrice(event, 'coriander')">
+            <input type="number" id="coriander_price" placeholder="₹" oninput="calculateWeight(event, 'coriander')">
         </div>
 
         <button onclick="calculateTotalPrice()">कुल कीमत निकालें</button>
-
         <p id="result"></p>
+
+        <div id="admin-form">
+            <h2>Admin Panel</h2>
+            
+            <div class="input-row">
+                <label for="tomato_base">टमाटर Base:</label>
+                <input type="number" id="tomato_base" placeholder="₹">
+                <label for="tomato_discount">टमाटर Discount:</label>
+                <input type="number" id="tomato_discount" placeholder="₹">
+            </div>
+
+            <div class="input-row">
+                <label for="potato1_base">आलू 1 Base:</label>
+                <input type="number" id="potato1_base" placeholder="₹">
+                <label for="potato1_discount">आलू 1 Discount:</label>
+                <input type="number" id="potato1_discount" placeholder="₹">
+            </div>
+
+            <div class="input-row">
+                <label for="potato2_base">आलू 2 Base:</label>
+                <input type="number" id="potato2_base" placeholder="₹">
+                <label for="potato2_discount">आलू 2 Discount:</label>
+                <input type="number" id="potato2_discount" placeholder="₹">
+            </div>
+
+            <div class="input-row">
+                <label for="potato3_base">आलू 3 Base:</label>
+                <input type="number" id="potato3_base" placeholder="₹">
+                <label for="potato3_discount">आलू 3 Discount:</label>
+                <input type="number" id="potato3_discount" placeholder="₹">
+            </div>
+
+            <div class="input-row">
+                <label for="ginger_base">अदरक Base:</label>
+                <input type="number" id="ginger_base" placeholder="₹">
+                <label for="ginger_discount">अदरक Discount:</label>
+                <input type="number" id="ginger_discount" placeholder="₹">
+            </div>
+
+            <div class="input-row">
+                <label for="chilli_base">मिर्ची Base:</label>
+                <input type="number" id="chilli_base" placeholder="₹">
+                <label for="chilli_discount">मिर्ची Discount:</label>
+                <input type="number" id="chilli_discount" placeholder="₹">
+            </div>
+
+            <div class="input-row">
+                <label for="onion_base">प्याज Base:</label>
+                <input type="number" id="onion_base" placeholder="₹">
+                <label for="onion_discount">प्याज Discount:</label>
+                <input type="number" id="onion_discount" placeholder="₹">
+            </div>
+
+            <div class="input-row">
+                <label for="lemon_base">नींबू Base:</label>
+                <input type="number" id="lemon_base" placeholder="₹">
+                <label for="lemon_discount">नींबू Discount:</label>
+                <input type="number" id="lemon_discount" placeholder="₹">
+            </div>
+
+            <div class="input-row">
+                <label for="garlic_base">लहसुन Base:</label>
+                <input type="number" id="garlic_base" placeholder="₹">
+                <label for="garlic_discount">लहसुन Discount:</label>
+                <input type="number" id="garlic_discount" placeholder="₹">
+            </div>
+
+            <div class="input-row">
+                <label for="coriander_base">धनिया Base:</label>
+                <input type="number" id="coriander_base" placeholder="₹">
+                <label for="coriander_discount">धनिया Discount:</label>
+                <input type="number" id="coriander_discount" placeholder="₹">
+            </div>
+
+            <button onclick="updatePrices()">Update Prices</button>
+            <button onclick="closeAdminForm()">Close Admin Panel</button>
+        </div>
     </div>
 </body>
 </html>
